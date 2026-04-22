@@ -1,4 +1,4 @@
-import type { FieldError, UseFormRegisterReturn } from 'react-hook-form';
+import type { FieldError, FieldValues, UseFormRegisterReturn, UseFormTrigger } from 'react-hook-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,11 +13,11 @@ type Props = {
   icon: IconDefinition,
   register: UseFormRegisterReturn,
   error?: FieldError,
-  isTouched?: boolean,
-  value?: string
+  isTouched?: boolean
 };
 
-const FormInput = ({ label, type, placeholder, icon, register, error, isTouched, value }: Props) => {
+const FormInput = ({ label, type, placeholder, icon, register, error, isTouched }: Props) => {
+
   return (
     <>
       <div className="field">
@@ -28,7 +28,7 @@ const FormInput = ({ label, type, placeholder, icon, register, error, isTouched,
           <span className="icon is-small is-left">
             <FontAwesomeIcon icon={icon} />
           </span>
-          {isTouched && value?.trim().length > 0 && (
+          {isTouched && (
             !error
               ? <CheckIcon />
               : <XmarkIcon />

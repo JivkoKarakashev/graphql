@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import styles from "./LoginPage.module.css";
@@ -11,13 +11,10 @@ import FormInput from '../components/FormInput.tsx';
 const LoginPage = ({ onLogin }: { onLogin: (userData: LoginUser) => Promise<void> }): React.ReactElement => {
   const navigate = useNavigate();
 
-  const { register, handleSubmit, control, formState: { errors, isSubmitting, touchedFields } } = useForm<LoginUser>({
+  const { register, handleSubmit, formState: { errors, isSubmitting, touchedFields, dirtyFields } } = useForm<LoginUser>({
     resolver: zodResolver(loginSchema),
     mode: 'onChange'
   });
-
-  const email = useWatch({ control, name: 'email' });
-  const password = useWatch({ control, name: 'password' });
 
   const onSubmit = async (userData: LoginUser) => {
     try {
@@ -42,8 +39,7 @@ const LoginPage = ({ onLogin }: { onLogin: (userData: LoginUser) => Promise<void
           icon={faEnvelope}
           register={register('email')}
           error={errors.email}
-          isTouched={touchedFields.email}
-          value={email}
+          isTouched={touchedFields.email && dirtyFields.email}
         />
 
         <FormInput
@@ -53,8 +49,7 @@ const LoginPage = ({ onLogin }: { onLogin: (userData: LoginUser) => Promise<void
           icon={faLock}
           register={register('password')}
           error={errors.password}
-          isTouched={touchedFields.password}
-          value={password}
+          isTouched={touchedFields.password && dirtyFields.password}
         />
 
         <button className={`button is-link ${isSubmitting ? 'is-loading' : ''} `} disabled={isSubmitting} type='submit' >Submit</button>

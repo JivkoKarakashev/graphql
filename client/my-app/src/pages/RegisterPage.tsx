@@ -12,21 +12,13 @@ import { registerSchema, type RegisterUser } from "../schemas/registerSchema.ts"
 const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => Promise<void> }): React.ReactElement => {
   const navigate = useNavigate();
 
-  const { register, handleSubmit, control, formState: { errors, isSubmitting, touchedFields }, trigger } = useForm<RegisterUser>({
+  const { register, handleSubmit, control, formState: { errors, isSubmitting, touchedFields, dirtyFields }, trigger } = useForm<RegisterUser>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange'
   });
 
-  const username = useWatch({ control, name: 'username' });
-  const email = useWatch({ control, name: 'email' });
   const password = useWatch({ control, name: 'password' });
   const rePassword = useWatch({ control, name: 'rePassword' });
-
-  useEffect(() => {
-    if (password) {
-      trigger('rePassword');
-    }
-  }, [password, trigger]);
 
   const onSubmit = async (userData: RegisterUser) => {
     try {
@@ -51,8 +43,7 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
           icon={faCircleUser}
           register={register('username')}
           error={errors.username}
-          isTouched={touchedFields.username}
-          value={username}
+          isTouched={touchedFields.username && dirtyFields.username}
         />
 
         <FormInput
@@ -62,8 +53,7 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
           icon={faEnvelope}
           register={register('email')}
           error={errors.email}
-          isTouched={touchedFields.email}
-          value={email}
+          isTouched={touchedFields.email && dirtyFields.email}
         />
 
         <FormInput
@@ -71,10 +61,11 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
           type='password'
           placeholder='Password'
           icon={faLock}
-          register={register('password')}
+          register={register('password', {
+            onChange: () => rePassword ? trigger('rePassword') : null
+          })}
           error={errors.password}
-          isTouched={touchedFields.password}
-          value={password}
+          isTouched={touchedFields.password && dirtyFields.password}
         />
 
         <FormInput
@@ -82,10 +73,11 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
           type='password'
           placeholder='Repeat Password'
           icon={faLock}
-          register={register('rePassword')}
+          register={register('rePassword', {
+            onChange: () => password ? trigger('password') : null
+          })}
           error={errors.rePassword}
-          isTouched={touchedFields.rePassword}
-          value={rePassword}
+          isTouched={touchedFields.rePassword && dirtyFields.rePassword}
         />
 
         <button className={`button is-link ${isSubmitting ? 'is-loading' : ''} `} disabled={isSubmitting} type='submit' >Submit</button>

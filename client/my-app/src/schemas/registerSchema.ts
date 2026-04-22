@@ -6,7 +6,7 @@ const registerSchema = z.object({
     password: z.string().min(6, 'Password must be at least 6 characters long!'),
     rePassword: z.string()
 }).refine((data) => {
-    if (!data.rePassword) {
+    if (!data.rePassword || !data.password) {
         return true;
     }
     return data.password === data.rePassword;
