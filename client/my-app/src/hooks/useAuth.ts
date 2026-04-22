@@ -2,15 +2,17 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AuthStateContext } from "../context/auth.tsx";
-import { login, register, type RegisterUser } from "../api/auth.ts";
+import { login, register } from "../api/auth.ts";
+import type { RegisterUser } from "../schemas/registerSchema.ts";
+import type { LoginUser } from "../schemas/loginSchema.ts";
 
 const useAuth = () => {
   const { isAuthSetter, uIdSetter, userSetter } = useContext(AuthStateContext);
   const navigate = useNavigate();
 
-  const onLogin = async (email: string, password: string): Promise<void> => {
+  const onLogin = async (userData: LoginUser): Promise<void> => {
     try {
-      const authUser = await login(email, password);
+      const authUser = await login(userData);
       isAuthSetter(!!authUser);
       userSetter(authUser ?? undefined);
       uIdSetter(authUser.id ?? undefined);
@@ -18,8 +20,8 @@ const useAuth = () => {
     } catch (err) {
       console.error("An error occurred on User's login!", err);
       throw err;
-    } 
-    
+    }
+
   };
 
   const onRegister = async (userData: RegisterUser): Promise<void> => {

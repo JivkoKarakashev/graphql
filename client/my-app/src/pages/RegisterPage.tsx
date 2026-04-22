@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import styles from "./RegisterPage.module.css";
-import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 
 import FormInput from "../components/FormInput.tsx";
 import { registerSchema, type RegisterUser } from "../schemas/registerSchema.ts";
@@ -12,17 +12,20 @@ import { registerSchema, type RegisterUser } from "../schemas/registerSchema.ts"
 const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => Promise<void> }): React.ReactElement => {
   const navigate = useNavigate();
 
-
-  const { register, handleSubmit, formState: { errors, isSubmitting, touchedFields }, watch, trigger } = useForm<RegisterUser>({
+  const { register, handleSubmit, control, formState: { errors, isSubmitting, touchedFields }, trigger } = useForm<RegisterUser>({
     resolver: zodResolver(registerSchema),
-    mode: 'onBlur'
+    mode: 'onChange'
   });
 
-  const password = watch('password');
-  const rePassword = watch('rePassword');
+  const username = useWatch({ control, name: 'username' });
+  const email = useWatch({ control, name: 'email' });
+  const password = useWatch({ control, name: 'password' });
+  const rePassword = useWatch({ control, name: 'rePassword' });
 
   useEffect(() => {
-    trigger('rePassword');
+    if (password) {
+      trigger('rePassword');
+    }
   }, [password, trigger]);
 
   const onSubmit = async (userData: RegisterUser) => {
@@ -33,6 +36,7 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
       console.log('Successful registration!');
       // navigate('/');
     } catch (err) {
+      console.log(JSON.stringify(err));
       alert("An error occurred on User's register!");
     }
   };
@@ -41,30 +45,47 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
     <div className={styles.container}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormInput
-          type="email"
-          placeholder="Email"
+          label='Username'
+          type='text'
+          placeholder='Username'
+          icon={faCircleUser}
+          register={register('username')}
+          error={errors.username}
+          isTouched={touchedFields.username}
+          value={username}
+        />
+
+        <FormInput
+          label='Email'
+          type='email'
+          placeholder='Email'
           icon={faEnvelope}
           register={register('email')}
           error={errors.email}
           isTouched={touchedFields.email}
+          value={email}
         />
 
         <FormInput
-          type="password"
-          placeholder="Password"
+          label='Password'
+          type='password'
+          placeholder='Password'
           icon={faLock}
           register={register('password')}
           error={errors.password}
           isTouched={touchedFields.password}
+          value={password}
         />
 
         <FormInput
-          type="password"
-          placeholder="Repeat Password"
+          label='Repeat Password'
+          type='password'
+          placeholder='Repeat Password'
           icon={faLock}
           register={register('rePassword')}
           error={errors.rePassword}
-          isTouched={touchedFields.rePassword || !!rePassword}
+          isTouched={touchedFields.rePassword}
+          value={rePassword}
         />
 
         <button className={`button is-link ${isSubmitting ? 'is-loading' : ''} `} disabled={isSubmitting} type='submit' >Submit</button>

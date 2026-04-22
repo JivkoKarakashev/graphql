@@ -1,4 +1,6 @@
-import config from '../config';
+import config from '../config.ts';
+import type { LoginUser } from '../schemas/loginSchema.ts';
+import type { RegisterUser } from '../schemas/registerSchema.ts';
 
 interface AuthUser {
   id: string,
@@ -6,21 +8,14 @@ interface AuthUser {
   email: string
 }
 
-interface RegisterUser {
-  username: string,
-  email: string,
-  password: string,
-  rePassword: string
-}
-
-const login = async (email: string, password: string): Promise<AuthUser> => {
+const login = async (userData: LoginUser): Promise<AuthUser> => {
   const options: RequestInit = {
     method: 'POST',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify(userData)
   };
   const res = await fetch(`${config.apiUrl}/login`, options);
 
