@@ -3,15 +3,25 @@ import http from 'http';
 import { app } from './app';
 import { env } from './config/env';
 import { startApollo } from './graphql';
+import { waitForDb } from './scripts/waitForDb';
 
 const httpServer = http.createServer(app);
 
 (async function bootstrap() {
-  await startApollo(httpServer);
+  try {
+    console.log('Starting server...');
+    // 1. Wait DB
+    await waitForDb();
+    // 2. Start API
+    await startApollo(httpServer);
 
-  await new Promise<void>((resolve) =>
-    httpServer.listen({ port: env.LISTENING_PORT }, resolve)
-  );
+    await new Promise<void>((resolve) =>
+      httpServer.listen({ port: env.LISTENING_PORT }, resolve)
+    );
 
-  console.log(`HTTP server is running on http://localhost:${env.LISTENING_PORT} [env: ${env.NODE_ENV}]`);
+    console.log(`HTTP server is running on http://localhost:${env.LISTENING_PORT} [env: ${env.NODE_ENV}]`);
+  } catch (err) {
+    console.error('Startup failed: ', err);
+    process.exit(1);
+  }
 })();

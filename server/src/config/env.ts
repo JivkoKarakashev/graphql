@@ -1,10 +1,12 @@
 import dotenvFlow from 'dotenv-flow';
-dotenvFlow.config();
+dotenvFlow.config({
+  node_env: process.env.NODE_ENV
+});
 
 import { z } from 'zod';
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production']),
+  NODE_ENV: z.enum(['local', 'development', 'production']),
   LISTENING_PORT: z.coerce.number(),
   DATABASE_URL: z.string(),
   ACCESS_SECRET: z.string().min(32),
