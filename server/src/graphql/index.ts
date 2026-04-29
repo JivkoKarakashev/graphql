@@ -15,7 +15,7 @@ export const startApollo = async (app: Express, httpServer: http.Server) => {
     typeDefs,
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    formatError: (formattedError, err) => {
+    formatError: (formattedError, _err) => {
       if (env.NODE_ENV === 'production' && formattedError.extensions?.code === 'INTERNAL_SERVER_ERROR') {
         return {
           message: 'Something went wrong!',

@@ -8,7 +8,7 @@ export async function waitForDb() {
       await client.query('SELECT 1');
       console.log('Database is ready!');
       return;
-    } catch (err) {
+    } catch (_err) {
       console.log(`Waiting for DB... (${attempt + 1}/30)`);
       await new Promise((res) => setTimeout(res, 2000));
     } finally {

@@ -4,14 +4,10 @@ import jwt from 'jsonwebtoken';
 
 import { prisma } from '../../config/db';
 import { env } from '../../config/env';
+import { JwtPayload } from '../../graphql/context';
 import { ConflictError, UnauthorizedError, NotFoundError, } from '../../errors';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-interface JwtPayload {
-  userId: string,
-  email: string,
-  username: string
-}
 
 interface TokenPair {
   accessToken: string,
@@ -190,7 +186,6 @@ const issueTokenPair = async (user: { id: string; email: string; username: strin
 };
 
 export {
-  type JwtPayload,
   type TokenPair,
   type RegisterInput,
   type LoginInput,
