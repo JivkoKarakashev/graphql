@@ -17,43 +17,75 @@ datasource db {
   provider = "postgresql"
 }
 
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  REMOTE
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+  DRAFT
+}
+
 model User {
-  id                String          @id               @default(uuid())
-  username          String          @unique           @db.VarChar(50)
-  email             String          @unique           @db.VarChar(50)
-  password          String                            @db.VarChar(50)
-  token             Token[]
+  id                String          @id @default(uuid())
+  username          String          @unique @db.VarChar(50)
+  email             String          @unique @db.VarChar(100)
+  password          String          @db.VarChar(72)
+  createdAt         DateTime        @db.Timestamptz @default(now())
+  updatedAt         DateTime        @db.Timestamptz @updatedAt
+  refreshTokens     RefreshToken[]
 
   @@map("user")
 }
 
-model Token {
-  id                String          @id               @default(uuid())
-  token             String          @unique       
+model RefreshToken {
+  id                String          @id @default(uuid())
+  tokenHash         String          @unique
+  familyId          String
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId            String
-  expiresAt         DateTime
-  createdAt         DateTime        @db.Timestamptz   @default(now())
+  deviceInfo        String?         @db.VarChar(255)
+  createdAt         DateTime        @db.Timestamptz @default(now())
+  expiresAt         DateTime        @db.Timestamptz
+  usedAt            DateTime?       @db.Timestamptz
+  revokedAt         DateTime?       @db.Timestamptz
 
-  @@map("token")
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_token")
 }
 
 model Company {
-  id                String          @id               @default(uuid())
-  name              String          @unique           @db.VarChar(50)
+  id                String          @id @default(uuid())
+  name              String          @unique @db.VarChar(100)
   description       String
-  job               Job[]
+  logo              String?         @db.VarChar(500)
+  website           String?         @db.VarChar(500)
+  jobs              Job[]
 
   @@map("company")
 }
 
 model Job {
-  id                String          @id               @default(uuid())
+  id                String          @id @default(uuid())
   company           Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId         String
-  title             String                            @db.VarChar(50)
-  date              DateTime                          @db.Timestamptz(6)
+  title             String          @db.VarChar(100)
   description       String
+  location          String?         @db.VarChar(100)
+  salaryMin         Int?
+  salaryMax         Int?
+  type              JobType         @default(FULL_TIME)
+  status            JobStatus       @default(DRAFT)
+  postedAt          DateTime        @db.Timestamptz @default(now())
+  expiresAt         DateTime?       @db.Timestamptz
 
+  @@index([companyId])
+  @@index([status])
   @@map("job")
 }

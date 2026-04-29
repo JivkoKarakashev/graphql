@@ -12,6 +12,9 @@ const envSchema = z.object({
   ACCESS_SECRET: z.string().min(32),
   REFRESH_SECRET: z.string().min(32),
   CLIENT_URL: z.url(),
+  BCRYPT_ROUNDS: z.coerce.number(),
+  ACCESS_TOKEN_TTL: z.coerce.number(),
+  REFRESH_TOKEN_TTL_MS: z.coerce.number()
 });
 
 export const env = envSchema.parse(process.env);
