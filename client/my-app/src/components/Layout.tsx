@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import { AuthStateContext } from '../context/auth.tsx';
+import { AuthContext } from '../context/auth.tsx';
 import NavBar from './NavBar.tsx';
 import useAuth from '../hooks/useAuth.ts';
 
 const Layout = (): React.ReactElement => {
-  const { user } = useContext(AuthStateContext);
+  const { user } = useContext(AuthContext);
   const { onLogout } = useAuth();
 
   return (

@@ -1,21 +1,17 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { AuthStateContext } from "../context/auth.tsx";
-import { login, register } from "../api/auth.ts";
+import { AuthContext } from "../context/auth.tsx";
 import type { RegisterUser } from "../schemas/registerSchema.ts";
 import type { LoginUser } from "../schemas/loginSchema.ts";
 
 const useAuth = () => {
-  const { isAuthSetter, uIdSetter, userSetter } = useContext(AuthStateContext);
+  const { login, register, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const onLogin = async (userData: LoginUser): Promise<void> => {
+  const onLogin = async ({ email, password }: LoginUser): Promise<void> => {
     try {
-      const authUser = await login(userData);
-      isAuthSetter(!!authUser);
-      userSetter(authUser ?? undefined);
-      uIdSetter(authUser.id ?? undefined);
+      await login(email, password);
       navigate('/');
     } catch (err) {
       console.error("An error occurred on User's login!", err);
@@ -24,12 +20,9 @@ const useAuth = () => {
 
   };
 
-  const onRegister = async (userData: RegisterUser): Promise<void> => {
+  const onRegister = async ({ username, email, password }: RegisterUser): Promise<void> => {
     try {
-      const authUser = await register(userData);
-      isAuthSetter(!!authUser);
-      userSetter(authUser ?? undefined);
-      uIdSetter(authUser.id ?? undefined);
+      await register(username, email, password);
       navigate('/');
     } catch (err) {
       console.error("An error occurred on User's register!", err);
@@ -38,11 +31,8 @@ const useAuth = () => {
   };
 
   const onLogout = async () => {
-    // TODO User's logout logic implementation
     try {
-      isAuthSetter(false);
-      userSetter(undefined);
-      uIdSetter(undefined);
+      await logout();
     } catch (err) {
       console.error("An error occurred on User's logout!", err);
       throw err;

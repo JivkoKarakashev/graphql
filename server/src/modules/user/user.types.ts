@@ -5,17 +5,17 @@ export const userTypeDefs = `#graphql
     email: String!
   }
 
-  type Query {
+  extend type Query {
     users: [User!]!
+  }
+
+  extend type Mutation {
+    createUser(input: CreateUserInput!): User!
   }
 
   input CreateUserInput {
     username: String!
     email: String!
     password: String!
-  }
-
-  type Mutation {
-    createUser(input: CreateUserInput!): User!
   }
 `;

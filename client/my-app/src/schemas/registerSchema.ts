@@ -15,9 +15,12 @@ const registerSchema = z.object({
     path: ['rePassword'],
 });
 
+// const publicRegisterSchema = registerSchema.omit({ rePassword: true });
 type RegisterUser = z.infer<typeof registerSchema>;
+type PublicRegisterUser = Omit<RegisterUser, 'rePassword'>;
 
 export {
-  type RegisterUser,
-  registerSchema
+    type RegisterUser,
+    type PublicRegisterUser,
+    registerSchema
 }

@@ -9,8 +9,9 @@
     "build": "rimraf dist && tsc",
     "start": "node dist/server.js",
 
-    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
 
     "docker:dev": "docker-compose --env-file .env.development -f docker-compose.dev.yml up --build",
     "docker:prod": "docker-compose --env-file .env.production -f docker-compose.prod.yml up -d --build",

@@ -20,12 +20,12 @@ const LoginPage = ({ onLogin }: { onLogin: (userData: LoginUser) => Promise<void
     try {
       await new Promise((res) => setTimeout(res, 1500));
       console.log(userData);
-      // await onLogin(userData);
+      await onLogin(userData);
       console.log('Successful logged-in!');
-      // navigate('/');
+      navigate('/');
     } catch (err) {
-      console.log(JSON.stringify(err));
-      alert("An error occurred on User's login!");
+      const message = err.graphQLErrors?.[0]?.message ?? "User's login failed!";
+      alert(message);
     }
   };
 

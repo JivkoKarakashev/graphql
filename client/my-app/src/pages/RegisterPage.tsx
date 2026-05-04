@@ -23,12 +23,12 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
     try {
       await new Promise((res) => setTimeout(res, 1500));
       console.log(userData);
-      // await onRegister(userData);
+      await onRegister(userData);
       console.log('Successful registration!');
-      // navigate('/');
+      navigate('/');
     } catch (err) {
-      console.log(JSON.stringify(err));
-      alert("An error occurred on User's register!");
+      const message = err.graphQLErrors?.[0]?.message ?? 'Registration failed!';
+      alert(message);
     }
   };
 
