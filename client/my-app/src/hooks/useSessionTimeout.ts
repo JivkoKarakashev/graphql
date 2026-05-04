@@ -42,7 +42,7 @@ const useSessionTimeout = ({ accessToken, tokenTtlMs, warningBeforeMs, onWarning
       clearTimers();
     }
     return clearTimers;
-  }, [accessToken]); // restart timers whenever token changes (after refresh)
+  }, [accessToken, startTimers, clearTimers]); // restart timers whenever token changes (after refresh)
 
   return { resetTimers: startTimers, clearTimers };
 };

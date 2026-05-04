@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,9 +8,11 @@ import { faCircleUser, faEnvelope, faLock } from '@fortawesome/free-solid-svg-ic
 
 import FormInput from "../components/FormInput.tsx";
 import { registerSchema, type RegisterUser } from "../schemas/registerSchema.ts";
+import { ErrorContext } from "../context/error.tsx";
 
 const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => Promise<void> }): React.ReactElement => {
   const navigate = useNavigate();
+  const { addError } = useContext(ErrorContext);
 
   const { register, handleSubmit, control, formState: { errors, isSubmitting, touchedFields, dirtyFields }, trigger } = useForm<RegisterUser>({
     resolver: zodResolver(registerSchema),
@@ -27,8 +30,8 @@ const RegisterPage = ({ onRegister }: { onRegister: (userData: RegisterUser) => 
       console.log('Successful registration!');
       navigate('/');
     } catch (err) {
-      const message = err.graphQLErrors?.[0]?.message ?? 'Registration failed!';
-      alert(message);
+      const message = err instanceof Error ? err.message : 'Registration failed!';
+      addError(message);
     }
   };
 

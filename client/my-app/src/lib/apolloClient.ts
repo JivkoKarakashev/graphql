@@ -36,7 +36,7 @@ const errorLink = new ErrorLink(({ error, operation, forward }) => {
             observer.error(new Error('Session expired!'));
             return;
           }
-          operation.setContext((prev: Record<string, any>) => ({
+          operation.setContext((prev: ReturnType<ApolloLink.Operation['getContext']>) => ({
             headers: {
               ...prev.headers,
               Authorization: `Bearer ${newToken}`,

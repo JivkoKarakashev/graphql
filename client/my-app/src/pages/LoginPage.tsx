@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,9 +8,11 @@ import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 
 import { loginSchema, type LoginUser } from '../schemas/loginSchema.ts';
 import FormInput from '../components/FormInput.tsx';
+import { ErrorContext } from '../context/error.tsx';
 
 const LoginPage = ({ onLogin }: { onLogin: (userData: LoginUser) => Promise<void> }): React.ReactElement => {
   const navigate = useNavigate();
+  const { addError } = useContext(ErrorContext);
 
   const { register, handleSubmit, formState: { errors, isSubmitting, touchedFields, dirtyFields } } = useForm<LoginUser>({
     resolver: zodResolver(loginSchema),
@@ -24,8 +27,8 @@ const LoginPage = ({ onLogin }: { onLogin: (userData: LoginUser) => Promise<void
       console.log('Successful logged-in!');
       navigate('/');
     } catch (err) {
-      const message = err.graphQLErrors?.[0]?.message ?? "User's login failed!";
-      alert(message);
+      const message = err instanceof Error ? err.message : "User's login failed!";
+      addError(message);
     }
   };
 

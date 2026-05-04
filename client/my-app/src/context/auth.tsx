@@ -1,10 +1,11 @@
-import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { authService, type AuthUser } from "../services/auth";
-import { apolloClient } from "../lib/apolloClient";
-import SessionWarningModal from "../components/SessionWarningModal";
-import useSessionTimeout from "../hooks/useSessionTimeout";
+import { authService, type AuthUser } from "../services/auth.ts";
+import { apolloClient } from "../lib/apolloClient.ts";
+import SessionWarningModal from "../components/SessionWarningModal.tsx";
+import useSessionTimeout from "../hooks/useSessionTimeout.ts";
+import { ErrorContext } from "./error.tsx";
 
 interface AuthState {
   user: AuthUser | null,
@@ -44,6 +45,7 @@ const AuthContext = createContext<AuthContextValue>(authContextValueInit);
 
 function AuthContextProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const navigate = useNavigate();
+  const { addError } = useContext(ErrorContext);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,10 +100,14 @@ function AuthContextProvider({ children }: { children: React.ReactNode }): React
       stopCountdown();
       await apolloClient.clearStore();
 
-      const url = reason === 'expired' ? '/login?reason=expired' : '/login';
+      let url = '/login';
+      if (reason === 'expired') {
+        url = '/login?reason=expired';
+        addError('Your session has expired. Please log in again.', 'warning');
+      }
       navigate(url, { replace: true });
     }
-  }, [clearAuth, stopCountdown, navigate]);
+  }, [clearAuth, stopCountdown, navigate, addError]);
 
   const handleSessionExpired = useCallback(async () => {
     stopCountdown();
