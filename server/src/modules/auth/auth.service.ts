@@ -6,7 +6,7 @@ import { env } from '../../config/env';
 import { JwtPayload } from '../../graphql/context';
 import { ConflictError, UnauthorizedError, NotFoundError, } from '../../errors';
 import { AuthRepository } from './auth.repository';
-import { LoginInput, RegisterInput } from './auth.schema';
+import { LoginUserInput, RegisterUserInput } from './auth.schema';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -47,7 +47,7 @@ const generateRefreshToken = (): string => {
 // ─── Auth operations ─────────────────────────────────────────────────────────
 
 const AuthService = {
-  async register(input: RegisterInput, deviceId?: string, deviceInfo?: string): Promise<AuthResult> {
+  async register(input: RegisterUserInput, deviceId?: string, deviceInfo?: string): Promise<AuthResult> {
     const existing = await AuthRepository.findUserByEmailOrUsername(input.email, input.username);
 
     if (existing) {
@@ -70,7 +70,7 @@ const AuthService = {
     return { ...tokens, user: { id: user.id, username: user.username, email: user.email } };
   },
 
-  async login(input: LoginInput, deviceId?: string, deviceInfo?: string): Promise<AuthResult> {
+  async login(input: LoginUserInput, deviceId?: string, deviceInfo?: string): Promise<AuthResult> {
     const user = await AuthRepository.findUserByEmail(input.email);
 
     // Constant-time compare — don't short-circuit on missing user

@@ -8,4 +8,6 @@ const router = Router();
 router.post('/refresh', refreshHandler);
 router.post('/logout', logoutHandler);
 
-export default router;
+export {
+    router as authRoutes
+}

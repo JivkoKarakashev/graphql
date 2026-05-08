@@ -1,5 +1,6 @@
 import { userTypeDefs } from '../../modules/user/user.types';
 import { authTypeDefs } from '../../modules/auth/auth.types';
+import { companyTypeDefs } from '../../modules/company/company.types';
 
 export const typeDefs = `#graphql
   type Query
@@ -7,4 +8,5 @@ export const typeDefs = `#graphql
 
   ${userTypeDefs}
   ${authTypeDefs}
+  ${companyTypeDefs}
 `;

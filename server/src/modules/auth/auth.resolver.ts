@@ -2,7 +2,8 @@ import { AuthService } from './auth.service';
 import { CLEAR_COOKIE_OPTIONS, COOKIE_NAME, COOKIE_OPTIONS } from './auth.controller';
 import { AppContext } from '../../graphql/context';
 import { UnauthorizedError } from '../../errors';
-import { registerSchema, loginSchema } from './auth.schema';
+import { loginUserSchema, registerUserSchema } from './auth.schema';
+import { validate } from '../../graphql/validate';
 
 export const authResolvers = {
   Query: {
@@ -20,10 +21,10 @@ export const authResolvers = {
       args: { input: { username: string; email: string; password: string } },
       ctx: AppContext
     ) => {
-      const input = registerSchema.parse(args.input);
+      const input = validate(registerUserSchema, args.input);
       const deviceId = ctx.req.headers['x-device-id'] as string | undefined;
       const deviceInfo = ctx.req.headers['user-agent'];
-      
+
       const { accessToken, refreshToken, user } = await AuthService.register(input, deviceId, deviceInfo);
       ctx.res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTIONS);
       return { accessToken, user };
@@ -34,7 +35,7 @@ export const authResolvers = {
       args: { input: { email: string; password: string } },
       ctx: AppContext
     ) => {
-      const input = loginSchema.parse(args.input);
+      const input = validate(loginUserSchema, args.input);
       const deviceId = ctx.req.headers['x-device-id'] as string | undefined;
       const deviceInfo = ctx.req.headers['user-agent'];
 

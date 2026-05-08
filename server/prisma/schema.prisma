@@ -39,6 +39,7 @@ model User {
   createdAt         DateTime        @db.Timestamptz @default(now())
   updatedAt         DateTime        @db.Timestamptz @updatedAt
   refreshTokens     RefreshToken[]
+  companies         Company[]
 
   @@map("user")
 }
@@ -61,12 +62,15 @@ model RefreshToken {
 
 model Company {
   id                String          @id @default(uuid())
+  owner             User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId           String
   name              String          @unique @db.VarChar(100)
   description       String
   logo              String?         @db.VarChar(500)
   website           String?         @db.VarChar(500)
   jobs              Job[]
 
+  @@index([ownerId])
   @@map("company")
 }
 

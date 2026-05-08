@@ -6,6 +6,7 @@ export const authTypeDefs = `#graphql
 
   type UserProfile {
     id: ID!
+    """This is a documentation  comment for the username field"""
     username: String!
     email: String!
   }
